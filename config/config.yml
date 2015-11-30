@@ -2,15 +2,14 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://localhost:8080/FsBlog
-gitlocation: https://github.com/fsprojects/FsBlog.git
+url: http://neoeinstein.github.io/FsBlog
+gitlocation: https://github.com/neoeinstein/FsBlog.git
 gitbranch: gh-pages
-title: FsBlog - F# static site generation
+title: Grim Sharper
 description: >
-    FsBlog aims to be a blog-aware static site generator, mostly built in F#. But don't worry, 
-    you won't even need to know any F# to get up and running. So long as you are comfortable 
-    using a command line or terminal, and have a degree of familiarity with Markdown and Razor 
-    syntax - you're good to go!
+    Writings on software engineering focusing on my journey into functional programming practices.
+    I am often found writing in F#, PowerShell, and C#. Former contributor to the Boo programming language.
+    Views expressed here are mine and do not represent the views of my employer or any other party.
 
 source: source/
 blog: source/blog/
