@@ -3,7 +3,7 @@
 # ----------------------- #
 
 url: https://neoeinstein.github.io
-gitlocation: https://github.com/neoeinstein/neoeinstein.github.io.git
+gitlocation: git@github.com:neoeinstein/neoeinstein.github.io.git
 gitbranch: gh-pages
 title: Grim's Grapes
 description: >
