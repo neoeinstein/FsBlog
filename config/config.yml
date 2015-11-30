@@ -4,7 +4,7 @@
 
 url: https://neoeinstein.github.io
 gitlocation: git@github.com:neoeinstein/neoeinstein.github.io.git
-gitbranch: gh-pages
+gitbranch: master
 title: Grim's Grapes
 description: >
     Writings on software engineering focusing on my journey into functional programming practices.
