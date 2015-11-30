@@ -235,7 +235,8 @@ Target "Install" (fun _ ->
     | _ ->
            CleanDir content
            CopyDir content (themes ++ theme) (fun file -> not(file.StartsWith(themes ++ theme ++ "source"))) |> ignore
-           CopyRecursive (themes ++ theme ++ "source") source true |> ignore
+           if directoryExists (themes ++ theme ++ "source") then
+            CopyRecursive (themes ++ theme ++ "source") source true |> ignore
 )
 
 "DoNothing" =?>
