@@ -216,7 +216,7 @@ Target "GitClone" (fun _ ->
     if(FileSystemHelper.directoryExists(deploy ++ ".git")) then
         ()
     else
-        Repository.cloneSingleBranch __SOURCE_DIRECTORY__ gitLocation.AbsoluteUri gitbranch deploy
+        Repository.cloneSingleBranch __SOURCE_DIRECTORY__ gitLocation gitbranch deploy
 )
 
 Target "GitPublish" (fun _ ->
