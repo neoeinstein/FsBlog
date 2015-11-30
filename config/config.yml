@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://neoeinstein.github.io/FsBlog
+url: http://localhost:8080/
 gitlocation: https://github.com/neoeinstein/FsBlog.git
 gitbranch: gh-pages
 title: Grim Sharper
