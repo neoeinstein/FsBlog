@@ -5,7 +5,7 @@ nuget FSharp.Formatting
 nuget NuGet.CommandLine
 nuget FAKE
 nuget RazorEngine
-nuget suave
-nuget NUnit 
-nuget NUnit.Runners
+nuget Suave
+nuget NUnit ~> 2
+nuget NUnit.Runners ~> 2
 github forki/FsUnit FsUnit.fs

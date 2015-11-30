@@ -1,11 +1,17 @@
 @{
     Layout = "default";
-    Title = "FsBlog";
-    Description = "A blog aware static site generator in mostly F#";
+    Title = "Blog posts";
+    Description = "Recent posts on this site";
+}
+@helper PostDate(DateTime rawDate) {
+    <time datetime="@rawDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss")" pubdate data-updated="true">@rawDate.ToString("MMM d, yyyy")</time>
 }
 @using System.Linq
 
+<h1>Recent posts</h1>
+
 @foreach (var post in Enumerable.Take(Model.Posts, 10))
 {
-    <a href="blog/@post.Url/index.html">@post.Title</a>
+    <h3 class="h2link"><a href="@(Model.Root)blog/@post.Url/index.html">@post.Title</a></h3>
+    <div class="view"><small>@PostDate(post.Date)</small><br />@post.Abstract</div>
 }

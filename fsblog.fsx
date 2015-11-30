@@ -77,8 +77,8 @@ let rsscount = 20
 // Regenerates the site
 // --------------------------------------------------------------------------------------
 
-let buildSite (updateTagArchive) =
-    let dependencies = [ yield! Directory.GetFiles(layouts) ] 
+let buildSite (updateTagArchive, root) =
+    let dependencies = [ yield! Directory.GetFiles(layouts) ]
     let noModel = { Root = root; MonthlyPosts = [||]; Posts = [||]; TaglyPosts = [||]; GenerateAll = true }
     let razor = new Razor(layouts, Model = noModel)
     let model =  Blog.LoadModel(tagRenames, Blog.TransformAsTemp (template, source) razor, root, blog)
@@ -87,34 +87,34 @@ let buildSite (updateTagArchive) =
     Blog.GenerateRss root title description model rsscount (output ++ "rss.xml")
 
     let uk = System.Globalization.CultureInfo.GetCultureInfo("en-GB")
-    Blog.GeneratePostListing 
-        layouts template blogIndex model model.MonthlyPosts 
+    Blog.GeneratePostListing
+        layouts template blogIndex model model.MonthlyPosts
         (fun (y, m, _) -> output ++ "blog" ++ "archive" ++ (m.ToLower() + "-" + (string y)) ++ "index.html")
         (fun (y, m, _) -> y = DateTime.Now.Year && m = uk.DateTimeFormat.GetMonthName(DateTime.Now.Month))
         (fun (y, m, _) -> sprintf "%d %s" y m)
         (fun (_, _, p) -> p)
 
     if updateTagArchive then
-        Blog.GeneratePostListing 
+        Blog.GeneratePostListing
             layouts template blogIndex model model.TaglyPosts
             (fun (_, u, _) -> output ++ "blog" ++ "tag" ++ u ++ "index.html")
             (fun (_, _, _) -> true)
             (fun (t, _, _) -> t)
             (fun (_, _, p) -> p)
 
-    let filesToProcess = 
+    let filesToProcess =
         FileHelpers.GetSourceFiles source output
         |> FileHelpers.SkipExcludedFiles exclude
         |> FileHelpers.TransformOutputFiles output
         |> FileHelpers.FilterChangedFiles dependencies special
-    
+
     let razor = new Razor(layouts, Model = model)
     for current, target in filesToProcess do
         FileHelpers.EnsureDirectory(Path.GetDirectoryName(target))
         printfn "Processing file: %s" (current.Substring(source.Length))
         Blog.TransformFile template true razor None current target
 
-    FileHelpers.CopyFiles content output 
+    FileHelpers.CopyFiles content output
 
 // --------------------------------------------------------------------------------------
 // Webserver stuff
@@ -128,7 +128,7 @@ let handleWatcherEvents (events:FileChange seq) =
         traceImportant <| sprintf "%s was changed." fi.Name
         match fi.Attributes.HasFlag FileAttributes.Hidden || fi.Attributes.HasFlag FileAttributes.Directory with
         | true -> ()
-        | _ ->  buildSite (false) // TODO optimize based on which file has changed
+        | _ ->  buildSite (false, "/") // TODO optimize based on which file has changed
     refreshEvent.Trigger()
 
 let socketHandler (webSocket : WebSocket) =
@@ -136,13 +136,13 @@ let socketHandler (webSocket : WebSocket) =
     while true do
       let! refreshed =
         Control.Async.AwaitEvent(refreshEvent.Publish)
-        |> Suave.Sockets.SocketOp.ofAsync 
+        |> Suave.Sockets.SocketOp.ofAsync
       do! webSocket.send Text (UTF8.bytes "refreshed") true
   }
 
 let startWebServer () =
     printfn "starting webserver: %s" (FullName output)
-    let serverConfig = 
+    let serverConfig =
         { defaultConfig with
            homeFolder = Some (FullName output)
            bindings = [HttpBinding.mk HTTP IPAddress.Loopback 8080us]
@@ -162,9 +162,12 @@ let startWebServer () =
 // --------------------------------------------------------------------------------------
 
 /// Regenerates the entire static website from source files (markdown and fsx).
-Target "Generate" (fun _ ->
+Target "GenerateLocal" (fun _ ->
+    buildSite (true, "/")
+)
 
-    buildSite (true)
+Target "GenerateRelease" (fun _ ->
+    buildSite (true, root)
 )
 
 Target "Preview" (fun _ ->
@@ -172,7 +175,7 @@ Target "Preview" (fun _ ->
         printfn "Dynamic: %A" changes
         handleWatcherEvents changes
     )
-    
+
     use watcherStatic = !! (content + "/**/*.*") |> WatchChanges (fun changes ->
         printfn "Static: %A" changes
         handleWatcherEvents changes
@@ -181,16 +184,16 @@ Target "Preview" (fun _ ->
     startWebServer ()
 
     traceImportant "Press Ctrl+C to stop!"
-    // wat!?    
+    // wat!?
     Thread.Sleep(-1)
 )
 
-Target "New" (fun _ ->       
-    let post, fsx, page = 
-        getBuildParam "post", 
+Target "New" (fun _ ->
+    let post, fsx, page =
+        getBuildParam "post",
         getBuildParam "fsx",
-        getBuildParam "page"    
-    
+        getBuildParam "page"
+
     match page, post, fsx with
     | "", "", "" -> traceError "Please specify either a new 'page', 'post' or 'fsx'."
     | _, "", ""  -> BlogPosts.CreateMarkdownPage source page
@@ -216,7 +219,7 @@ Target "GitClone" (fun _ ->
         Repository.cloneSingleBranch __SOURCE_DIRECTORY__ gitLocation.AbsoluteUri gitbranch deploy
 )
 
-Target "GitPublish" (fun _ -> 
+Target "GitPublish" (fun _ ->
     CopyRecursive output deploy true |> ignore
     CommandHelper.runSimpleGitCommand deploy "add ." |> printfn "%s"
     let cmd = sprintf """commit -a -m "Update generated web site (%s)""" (DateTime.Now.ToString("dd MMMM yyyy"))
@@ -224,23 +227,23 @@ Target "GitPublish" (fun _ ->
     Branches.push deploy
 )
 
-Target "Install" (fun _ -> 
+Target "Install" (fun _ ->
     let theme = getBuildParam "theme"
 
     match theme with
     | "" -> traceError "Please specify theme"
-    | _ -> 
+    | _ ->
            CleanDir content
            CopyDir content (themes ++ theme) (fun file -> not(file.StartsWith(themes ++ theme ++ "source"))) |> ignore
            CopyRecursive (themes ++ theme ++ "source") source true |> ignore
 )
 
-"DoNothing" =?> 
+"DoNothing" =?>
 ("Install", hasBuildParam "theme")  ==>
-"Generate" ==> "Preview"
+"GenerateLocal" ==> "Preview"
 
 "Clean" ==>
-"Generate" ==>
+"GenerateRelease" ==>
 "GitClone" ==> "GitPublish"
 
 // --------------------------------------------------------------------------------------

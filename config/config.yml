@@ -2,10 +2,10 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://localhost:8080/
-gitlocation: https://github.com/neoeinstein/FsBlog.git
+url: https://neoeinstein.github.io
+gitlocation: https://github.com/neoeinstein/neoeinstein.github.io.git
 gitbranch: gh-pages
-title: Grim Sharper
+title: Grim's Grapes
 description: >
     Writings on software engineering focusing on my journey into functional programming practices.
     I am often found writing in F#, PowerShell, and C#. Former contributor to the Boo programming language.
