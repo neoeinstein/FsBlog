@@ -14,13 +14,13 @@
 
 I solve problems.
 
-Working with a **heads-up** attitude, I also understand that *the best fix isn&#39;t always writing code*. Sometimes the correct answer lies in finding issue with a procedure or policy and championing a change that makes a code change unnecessary.
+Working with a **heads-up** attitude, I also understand that *the best fix isn't always writing code*. Sometimes the correct answer lies in finding issue with a procedure or policy and championing a change that makes a code change unnecessary.
 
 My credentials include work with many technologies and programming languages, and I am very capable at writing code to tackle issues along the way, having worked with .NET, Java, Python, and many others.
 
 I have a voracious appetite for learning and will quickly acquire the domain knowledge in your company to be able to coordinate solutions across group boundaries.
 
-If you&#39;re looking for an employee that can write a lot of high-quality code, I can do that very well. If you&#39;re looking for an employee that can really apply himself to see the big picture and *help direct future growth*, I can do that even better.
+If you're looking for an employee that can write a lot of high-quality code, I can do that very well. If you're looking for an employee that can really apply himself to see the big picture and *help direct future growth*, I can do that even better.
 
 I am well adapted to working in high-pressure situations and delivering. The ideal job would include me working with large-scale, performance-critical systems, especially dealing with information security.
 
@@ -49,7 +49,7 @@ f#, .net, c#, servicestack, soa, rest, scrum, agile
 
 .net, java, python, boo, perl
 
-* Was the Teaching Assistant for the undergraduate computer science capstone course &quot;Software Design &amp; Documentation&quot;
+* Was the Teaching Assistant for the undergraduate computer science capstone course "Software Design & Documentation"
 * Lectured on design patterns and antipatterns
 * Evaluated student projects submitted in technologies as diverse as PHP, Rails, Perl, C, Python, .NET, and Java.
 
@@ -61,7 +61,7 @@ asp, vb, tsql
 
 * Completed company training application in the shortest time of any employee with functionality above that required and with a technology I had never used prior
 * Developed an e-commerce platform with a content management system
-* Built a converter to take a user&#39;s Word document and generate a web page, designed for users with little technical knowledge
+* Built a converter to take a user's Word document and generate a web page, designed for users with little technical knowledge
 
 ---
 
@@ -69,8 +69,8 @@ asp, vb, tsql
 
 windows-server, php, system-administration, exchange-server
 
-* Maintained the software used to manage the Union&#39;s $8 million annual budget
-* Managed the websites of the Student Union&#39;s 130+ clubs
+* Maintained the software used to manage the Union's $8 million annual budget
+* Managed the websites of the Student Union's 130+ clubs
 * Managed email and computers of 20+ staff
 
 ---
@@ -83,7 +83,7 @@ information-systems-engin, networking
 
 * Concentration in Information Systems Engineering and Networking
 * Wrote an electronic voting gateway system for capstone project, used in part for campus-wide student elections
-* Obtained Bachelor&#39;s degree concurrently with Master&#39;s degree in 4 years
+* Obtained Bachelor's degree concurrently with Master's degree in 4 years
 
 ---
 
@@ -103,7 +103,7 @@ compilers, network-programming, game-development, data-mining
 ---
 
 
-##Projects &amp; Interests
+##Projects & Interests
 
 **Stack Overflow**, [http://stackoverflow.com/users/28645](http://stackoverflow.com/users/28645), *October 2008 - Current*
 
