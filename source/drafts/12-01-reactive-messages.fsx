@@ -151,7 +151,7 @@ above), can be composed and chained together.
 
 > By starting with base-event values to represent the communication operations, and providing combinators to
 associate actions with events and to build nondeterministic choices of events, we provide a flexible mechanism for
-building new synchronization and communication abstractions. —\[John Reppy, Concurrent Programming in ML, p. 124\]
+building new synchronization and communication abstractions. —\[John Reppy, [Concurrent Programming in ML][JRep99], p. 124\]
 
 Synchronous message-passing also has the advantage that its typical failure mode is deadlock, which can be detected
 quickly, whereas asynchronous message-passing typically delays the detection of errors until a mailbox is full (which
@@ -167,17 +167,19 @@ in Hopac.
 Overall, the Reactive Manifesto lays out some really good principles for how modern systems ought to be design, but
 the way it presents those principles should be taken with a grain of salt. We need to ensure that the reasoning
 presented starts from a good foundation and isn't being offered *post hoc*. The actor model is gaining a lot of traction
-these days with languages like Erlang and actor systems like [Akka][] and [Akka.Net][], but perhaps we should be
+these days with languages like [Erlang][] and actor systems like [Akka][] and [Akka.Net][], but perhaps we should be
 thinking a little more and seeing if there are better primitives for building our systems.
 
   [Akka]:http://akka.io
   [Akka.Net]:http://getakka.net
+  [Erlang]:http://www.erlang.org/
   [RM]:http://www.reactivemanifesto.org/
   [RM.Async]:http://www.reactivemanifesto.org/glossary#Asynchronous
   [RM.NonB]:http://www.reactivemanifesto.org/glossary#Non-Blocking
   [ALa15]:https://github.com/blog/2047-language-trends-on-github
   [CSør15]:http://blog.geist.no/an-actor-model-example-with-akka-net/
   [JAtw04]:https://blog.codinghorror.com/threading-concurrency-and-the-most-powerful-psychokinetic-explosive-in-the-univ/
+  [JRep99]:http://www.cambridge.org/tv/academic/subjects/computer-science/distributed-networked-and-mobile-computing/concurrent-programming-ml
   [PYLP]:https://pypl.github.io/PYPL.html
   [RPik12v]:https://vimeo.com/49718712
   [SpotifyCheatSheet]:http://nomad8.com/squadschaptersguilds/
