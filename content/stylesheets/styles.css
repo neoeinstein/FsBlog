@@ -83,7 +83,7 @@ pre {
   overflow-x: auto;
 }
 
-pre.fssnip, pre.fssnip code {
+table.pre pre, table.pre code {
   font-family: inherit;
   color: inherit;
   background-color: inherit;
@@ -91,7 +91,7 @@ pre.fssnip, pre.fssnip code {
   border: 0;
 }
 
-pre.fssnip, pre.fssnip code, pre.fssnip span {
+table.pre pre, table.pre code, table.pre span {
   font-size: 12pt;
   line-height: 1.35;
 }
