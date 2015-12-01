@@ -3,7 +3,7 @@
     Title = "Hello, FsBlog!";
     Date = "2015-11-29T23:27:31";
     Tags = "";
-    Description = "Getting started &emdash; all over again.";
+    Description = "Getting started — all over again.";
 }
 
 It has been a long time since I have done any sort of blogging. Now that I've committed to an F# Advent post, it's time that I pulled a fork off [FsBlog](https://github.com/fsprojects/FsBlog) and set up shop on `gh‑pages`.
@@ -20,8 +20,8 @@ For me, I also jumped at the chance to be writing blog posts in Markdown and F# 
 
     [lang=fsharp]
     /// Represents the Natural numbers starting from zero
-    let ℕ = Seq.initInfinite <| fun i -> i
-    ℕ
+    let ℕ0 = Seq.initInfinite <| fun i -> i
+    ℕ0
     |> Seq.take 200
     |> Seq.iteri <| fun idx ->
       printfn "Natural number %i is %i" (idx + 1)

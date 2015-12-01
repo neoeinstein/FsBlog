@@ -115,6 +115,7 @@ let buildSite (updateTagArchive, root) =
         Blog.TransformFile template true razor None current target
 
     FileHelpers.CopyFiles content output
+    DeleteDir (output ++ config.layouts)
 
 // --------------------------------------------------------------------------------------
 // Webserver stuff
