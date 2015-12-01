@@ -157,10 +157,18 @@ Synchronous message-passing also has the advantage that its typical failure mode
 quickly, whereas asynchronous message-passing typically delays the detection of errors until a mailbox is full (which
 in the case of an unbounded mailbox, may mean the entire process is out of memory).
 
+John Reppy's book, quoted above, presents Concurrent ML which is a set of concurrent extensions built upon Standard ML.
+These extensions provide first-class synchronous messaging primitives as well as the manner in which these units can be
+broken down composed so as to enable concurrent programming from within the structure of the largely sequential SML. In
+its first iteration, back in the 1990's, CML was written to enable concurrency on uniprocessors, which were the
+predominant architecture. Nowadays, in the .NET world, but particularly in F#, we have a great port of these primitives
+in Hopac.
+
 Overall, the Reactive Manifesto lays out some really good principles for how modern systems ought to be design, but
-that doesn't mean that the way the manifesto lays out those principles should go unquestioned. The actor model is
-gaining a lot of traction these days, but perhaps we should be thinking a little more and seeing if there are better
-primitives for building our systems.
+the way it presents those principles should be taken with a grain of salt. We need to ensure that the reasoning
+presented starts from a good foundation and isn't being offered *post hoc*. The actor model is gaining a lot of traction
+these days with languages like Erlang and actor systems like [Akka][] and [Akka.Net][], but perhaps we should be
+thinking a little more and seeing if there are better primitives for building our systems.
 
   [Akka]:http://akka.io
   [Akka.Net]:http://getakka.net
