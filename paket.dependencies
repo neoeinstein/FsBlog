@@ -9,3 +9,7 @@ nuget Suave
 nuget NUnit ~> 2
 nuget NUnit.Runners ~> 2
 github forki/FsUnit FsUnit.fs
+
+group posts
+  source https://nuget.org/api/v2
+nuget Hopac
