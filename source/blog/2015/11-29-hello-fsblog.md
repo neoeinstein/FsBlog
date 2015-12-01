@@ -6,7 +6,7 @@
     Description = "Getting started — all over again.";
 }
 
-It has been a long time since I have done any sort of blogging. Now that I've committed to an F# Advent post, it's time that I pulled a fork off [FsBlog](https://github.com/fsprojects/FsBlog) and set up shop on `gh‑pages`.
+It has been a long time since I have done any sort of blogging. Now that I've committed to an F# Advent post, it's time that I pulled a fork off [FsBlog][FsBlog] and set up shop on `gh‑pages`.
 
 <!--more-->
 
