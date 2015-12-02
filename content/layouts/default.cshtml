@@ -7,9 +7,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     @if (Title == "INDEX") {
-      <title>Grim's Grapes</title>
+      <title>@Model.BlogName</title>
      } else {
-       <title>Grim's Grapes — @Title</title>
+       <title>@Model.BlogName — @Title</title>
      }
     <link rel="stylesheet" href="@(Model.Root)fonts/firacode/FiraCode-Regular.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -36,7 +36,7 @@
   <body class="@BodyClass">
   	<div class="wrapper">
 	  <header>
-	  	  <a href="@(Model.Root)index.html" class="falseheader">Grim's Grapes</a>
+	  	  <a href="@(Model.Root)index.html" class="falseheader">@Model.BlogName</a>
         <div><strong><em>Marcus Griep</em></strong></div>
         <p>Writings on software engineering.</p>
         <ul>
@@ -58,7 +58,7 @@
       </section>
       <footer>
         <ul>
-          <li><span class="fa fa-github-alt fa-fw"></span> <a href="https://github.com/neoeinstein/FsBlog"><strong>Source</strong> on GitHub</a></li>
+          <li><span class="fa fa-github-alt fa-fw"></span> <a href="@ViewBag.SourceUrl"><strong>Source</strong> on GitHub</a></li>
           <li><span class="fa fa-exclamation-triangle fa-fw"></span> <a href="https://github.com/neoeinstein/FsBlog/issues/new?title=Error on '@Title'" target="_blank"><strong>Report</strong> an error</a></li>
           <li><span class="fa fa-terminal fa-fw"></span> <a href="javascript:function f(n){for(var i=0;i<n.length;++i)n[i].classList.toggle('disable-ligatures')}f(document.querySelectorAll('code'));"><strong>Toggle</strong> code ligatures</a></li>
         </ul>

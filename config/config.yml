@@ -5,6 +5,7 @@
 url: https://neoeinstein.github.io
 gitlocation: git@github.com:neoeinstein/neoeinstein.github.io.git
 gitbranch: master
+gitsourceroot: https://github.com/neoeinstein/FsBlog/tree/master/
 title: Grim's Grapes
 description: >
     Writings on software engineering focusing on my journey into functional programming practices.

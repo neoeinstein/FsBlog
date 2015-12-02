@@ -17,13 +17,14 @@ type Model =
       MonthlyPosts: (int * string * seq<BlogHeader>)[]
       TaglyPosts: (string * string * seq<BlogHeader>)[]
       GenerateAll: bool
-      Root: string }
+      Root: string
+      BlogName: string }
 
 
 module Blog =
 
   /// Walks over all blog post files and loads model (caches abstracts along the way)
-  let LoadModel(tagRenames, transformer, (root:string), blog) =
+  let LoadModel(blogname, tagRenames, transformer, (root:string), blog) =
     let urlFriendly (s:string) = s.Replace("#", "sharp").Replace(" ", "-").Replace(".", "dot")
     let posts = LoadBlogPosts tagRenames transformer blog
     let uk = System.Globalization.CultureInfo.GetCultureInfo("en-GB")
@@ -47,9 +48,10 @@ module Blog =
                 sortByDescending (year, month)
                 select (year, uk.DateTimeFormat.GetMonthName(month), g :> seq<_>) }
         |> Array.ofSeq
-      Root = root.Replace('\\', '/') }
+      Root = root.Replace('\\', '/')
+      BlogName = blogname }
 
-  let TransformFile template hasHeader (razor:FsBlogLib.Razor) prefix current target =
+  let TransformFile template hasHeader (razor:FsBlogLib.Razor) prefix current target sourceUrl =
     let html =
       match Path.GetExtension(current).ToLower() with
       | (".fsx" | ".md") as ext ->
@@ -67,9 +69,9 @@ module Blog =
           let processed = File.ReadAllText(html.FileName)
           File.WriteAllText(html.FileName, header + processed)
           EnsureDirectory(Path.GetDirectoryName(target))
-          razor.ProcessFile(html.FileName)
+          razor.ProcessFile html.FileName sourceUrl
       | ".html" | ".cshtml" ->
-          razor.ProcessFile(current)
+          razor.ProcessFile current sourceUrl
       | _ -> failwith "Not supported file!"
     File.WriteAllText(target, html)
 
@@ -81,7 +83,7 @@ module Blog =
     else
       printfn "Processing abstract: %s" (current.Substring(source.Length + 1))
       EnsureDirectory(Path.GetDirectoryName(current) ++ "cached")
-      TransformFile template false razor (Some prefix) current cached
+      TransformFile template false razor (Some prefix) current cached ""
       File.ReadAllText(cached)
 
   let GenerateRss root title description model take target =
@@ -115,4 +117,4 @@ module Blog =
       EnsureDirectory(Path.GetDirectoryName(target))
       if not (File.Exists(target)) || needsUpdate item then
         printfn "Generating archive: %s" (infoFunc item)
-        TransformFile template true razor None blogIndex target
+        TransformFile template true razor None blogIndex target ""

@@ -64,6 +64,8 @@ let template = __SOURCE_DIRECTORY__ ++ config.template
 let output = __SOURCE_DIRECTORY__ ++ config.output
 let deploy = __SOURCE_DIRECTORY__ ++ config.deploy
 
+let gitSourceRoot = config.gitsourceroot
+
 let tagRenames = List.empty<string*string> |> dict
 let exclude = []
 let references = []
@@ -79,9 +81,9 @@ let rsscount = 20
 
 let buildSite (updateTagArchive, root) =
     let dependencies = [ yield! Directory.GetFiles(layouts) ]
-    let noModel = { Root = root; MonthlyPosts = [||]; Posts = [||]; TaglyPosts = [||]; GenerateAll = true }
+    let noModel = { Root = root; MonthlyPosts = [||]; Posts = [||]; TaglyPosts = [||]; GenerateAll = true; BlogName = title }
     let razor = new Razor(layouts, Model = noModel)
-    let model =  Blog.LoadModel(tagRenames, Blog.TransformAsTemp (template, source) razor, root, blog)
+    let model =  Blog.LoadModel(title, tagRenames, Blog.TransformAsTemp (template, source) razor, root, blog)
 
     // Generate RSS feed
     Blog.GenerateRss root title description model rsscount (output ++ "rss.xml")
@@ -111,8 +113,8 @@ let buildSite (updateTagArchive, root) =
     let razor = new Razor(layouts, Model = model)
     for current, target in filesToProcess do
         FileHelpers.EnsureDirectory(Path.GetDirectoryName(target))
-        printfn "Processing file: %s" (current.Substring(source.Length))
-        Blog.TransformFile template true razor None current target
+        printfn "Processing file: %s => %s" (current.Substring(source.Length)) (target.Substring(output.Length))
+        Blog.TransformFile template true razor None current target (System.Uri(gitSourceRoot, current.Substring(__SOURCE_DIRECTORY__.Length + 1).Replace(@"\","/")) |> string)
 
     FileHelpers.CopyFiles content output
     DeleteDir (output ++ config.layouts)
