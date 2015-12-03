@@ -1,6 +1,6 @@
 (*@
     Layout = "draft";
-    Title = "The Reactive Manifesto and Asynchronous Messaging";
+    Title = "The Reactive Manifesto and Synchronous Messaging";
     Date = "2015-11-29T23:27:31";
     Tags = "";
     Description = "The Reactive Manifesto sets out some good ideas, but message-passing shouldn't need to be asynchronous.";
