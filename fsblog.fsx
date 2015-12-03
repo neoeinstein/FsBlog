@@ -114,7 +114,7 @@ let buildSite (updateTagArchive, root) =
     for current, target in filesToProcess do
         FileHelpers.EnsureDirectory(Path.GetDirectoryName(target))
         printfn "Processing file: %s => %s" (current.Substring(source.Length)) (target.Substring(output.Length))
-        Blog.TransformFile template true razor None current target (System.Uri(gitSourceRoot, current.Substring(__SOURCE_DIRECTORY__.Length + 1).Replace(@"\","/")) |> string)
+        Blog.TransformFile template true razor None current target (System.Uri(gitSourceRoot, current.Substring(__SOURCE_DIRECTORY__.Length + 1)) |> string)
 
     FileHelpers.CopyFiles content output
     DeleteDir (output ++ config.layouts)
