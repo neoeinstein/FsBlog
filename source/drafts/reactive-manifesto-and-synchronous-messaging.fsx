@@ -15,9 +15,9 @@ open Hopac.Infixes
 run <| Alt.unit ()
 (**
 
-Concurrency. It's a concept that is becomming increasingly importatnt to mainstream software engineers. For over a
-decade, the speed of processors has been steady. Limits imposed by quantum physics and manufacturing prcesses have
-induced manufacturers to add more processing cores instead of increasing processor speed. [The free lunch is over][JAtw04].
+Concurrency. It's a concept that is becoming increasingly important to mainstream software engineers. For over a
+decade, the speed of processors has been steady. Limits imposed by quantum physics and manufacturing processes have
+induced manufacturers to increase the number cores on a chip instead of increasing speed. [The free lunch is over][JAtw04].
 Applications no longer get faster just by dropping in a faster processor. Now applications must be written to take
 advantage of concurrency and parallelism, and understanding these concepts is key to writing the highly-performant
 software of tomorrow.
@@ -101,11 +101,11 @@ needed resource is not available, a process can suspend and allow other ready pr
 their flow. The server's side of asynchronous message-passing proves that waiting by one process does not imply blocking
 all others.
 
-In fact, all demonstrated in the analogies above, the mechanisms of asynchronous message-passing can be succinctly built
+In fact, as demonstrated in the analogies above, the mechanisms of asynchronous message-passing can be succinctly built
 from the primitives of synchronous rendezvous. A synchronous `give` can be converted into an asynchronous `send` by
 spawning a short-lived process to wait for the server to `take`. Multiple offers to `give` can be prioritized by the
-server. By freeing ourselves from the constraints of explicitly asynchronous communication systems get access to a more
-powerful set of constructs.
+server. By freeing ourselves from the constraints of explicitly asynchronous communication, applications can gain access
+to a more powerful set of constructs.
 
 Languages and libraries that provide synchronous message-passing primatives also provide mechanisms to allow for
 non-deterministic handling of rendezvous, selecting from among several possible alternatives. In [Hopac][], an F#
@@ -151,17 +151,17 @@ which can be detected quickly, whereas asynchronous message-passing typically de
 mailbox is full (which in the case of an unbounded mailbox, may mean the entire process is out of memory).
 
 *Concurrent Programming in ML*, quoted above, presents Concurrent ML as a set of extensions built upon Standard ML.
-These extensions provide first-class synchronous primitives and provides constructs which allow these units to be
-composed. Back in the 1990's when it was created, the dominant processor type was single-core uniprocessors. CML was
-written designed to enable concurrency on these machines. Hopac provides these primitives to .NET world and particularly
-to F#. The [Go][] language provides "[goroutines][GoConc]" and other synchronous programming constructs as part of the
-language. [Concurrency is not parallelism][RPik12v], but software that is written to leverage concurrency is enabled to
+These extensions provide first-class synchronous primitives and the constructs which allow for their composition.
+When CML was created in the early 1990's, the dominant architecture was the single-core uniprocessor so CML was
+designed to enable concurrency on these machines. Hopac provides similar primitives F# as a library, while [Go][]
+provides "[goroutines][GoConc]" and other synchronous programming constructs as part of the language.
+[Concurrency is not parallelism][RPik12v], but software that is written to leverage concurrency is better enabled to
 take advantage of the parallelism provided by modern hardware.
 
-Concurrency is a large and growing concern in software engineering. The *Reactive Manifesto*
-lays out some good principles, but its claims should be taken with a grain of salt. The goals of the manifesto can be
-achieved without solely relying on asynchronous message-passing. Synchronous message-passing can provide a more powerful
-set of abstractions while still being easier to reason about.
+The importance of designing systems that can take leverage concurrency will only increase as time goes on. The
+*Reactive Manifesto* lays out some good principles, but its claims should be taken with a grain of salt. The goals of
+the manifesto can be achieved without solely relying on asynchronous message-passing. Indeed, synchronous
+message-passing can provide a more powerful set of abstractions while still being easier to reason about.
 
   [CML]:http://cml.cs.uchicago.edu/
   [Go]:https://golang.org/
