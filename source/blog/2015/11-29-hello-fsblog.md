@@ -8,6 +8,8 @@
 
 It has been a long time since I have done any sort of blogging. Now that I've committed to an F# Advent post, it's time that I pulled a fork off [FsBlog][FsBlog] and set up shop on `gh‑pages`.
 
+  [FsBlog]:https://github.com/fsprojects/FsBlog
+
 <!--more-->
 
 I don't often find the time to sit down and write a proper post, and the hosting solutions that I've used in the past have been just as much a hassle as anything. In the past, I've journeyed the depths of Blogger, Livejournal, Wordpress, and a few self-hosted Wordpress instances. I've never been quite happy with the way that I can do things on sites like Blogger, and Livejournal is a relic of the early 2000's. Wordpress has been the general standard for blogging for the past few years, but it's written on PHP, and even the Wordpress folks [are getting tired of PHP][WPNew] as a language for web development. I don't blame them. Anytime I've done anything with PHP, I've been worried about security and never was sure if the ball of yarn I had just stood up for a blog was actually going to still be there when I looked back at it.
@@ -28,7 +30,6 @@ For me, I also jumped at the chance to be writing blog posts in Markdown and F# 
 
 [FSharp.Formatting][FsForm] provides rich tooltips to better understand what's going on in the code, like giving the signature for the `Seq.iteri` function. There are even more crazy awesome things that can be done, including [live evaluation and embedding of results][FsFormEval]. I plan on using these to their fullest as I continue to write about what I've been doing with F#.
 
-  [FsBlog]:https://github.com/fsprojects/FsBlog
   [FsForm]:https://tpetricek.github.io/FSharp.Formatting
   [FsFormEval]:https://tpetricek.github.io/FSharp.Formatting/evaluation.html
   [GHPages]:https://pages.github.com/
