@@ -6,7 +6,7 @@
     Description = "The Reactive Manifesto sets out some good ideas, but message-passing shouldn't need to be asynchronous.";
 *)
 (*** hide ***)
-#I @"..\..\..\packages\posts\Hopac\lib\net45"
+#I @"..\..\packages\posts\Hopac\lib\net45"
 #r "Hopac.Core.dll"
 #r "Hopac.dll"
 open Hopac
