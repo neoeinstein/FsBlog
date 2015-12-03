@@ -15,36 +15,27 @@ open Hopac.Infixes
 run <| Alt.unit ()
 (**
 
-Concurrency: A concept that all software engineers are coming to realize is increasingly important. In the past decade
-or so, the clock frequency of CPUs has plateaued. *Moore's Law* regarding transistor density is still holding, though
-we are approaching limits imposed by quantum physics. Instead of getting faster as CPU manufacturing processes shrink,
-processor companies are adding more cores onto a single chip. It's no secret that the free lunch is over; Jeff Atwood
-[noted the coming changes back in 2004][JAtw04]. In order to continue accelerating the performance of our applications,
-we must build our applications with concurrency and parallelism in mind.
+Concurrency. It's a concept that is becomming increasingly importatnt to mainstream software engineers. For over a
+decade, the speed of processors has been steady. Limits imposed by quantum physics and manufacturing prcesses have
+induced manufacturers to add more processing cores instead of increasing processor speed. [The free lunch is over][JAtw04].
+Applications no longer get faster just by dropping in a faster processor. Now applications must be written to take
+advantage of concurrency and parallelism, and understanding these concepts is key to writing the highly-performant
+software of tomorrow.
+
+  [JAtw04]:https://blog.codinghorror.com/threading-concurrency-and-the-most-powerful-psychokinetic-explosive-in-the-univ/
 *)
 (*** more ***)
 (**
 
-It's important to first note that there [is a difference between concurrency and parallelism][RPik12v]. But once we
-have done that, we realize that the tools we have are generally ill‐equiped to handle concurrent programming. Most of
-the common languages that are [used nowadays][ALa15] and [being searched for][PYLP] are imperative and object‐oriented
-languages. Functional languages—which tend to offer greater support for immutability and
-[referential transparency][HWikiRefTrans] and are better suited for a present where multiple cores share both data and
-execution—are only recently gaining mainstream notice.
-
-Enter the [Reactive Manifesto][RM], a document which establishes four core qualities that system architectures should
-exhibit in order to meet demands that they be highly‐available, fault‐tolerant, and scalable. Among the four properties
-is that a system be "message-driven", defined as:
+Enter the *[Reactive Manifesto][RM]*. This document establishes four properties—responsive, resilient, elastic,
+and message-driven—that systems need to exhibit in order to meet demands that they be highly‐available, fault‐tolerant,
+and scalable. I want to focus on the fourth property: message-driven. As the manifesto explains:
 
 >Reactive Systems rely on asynchronous message-passing to establish a boundary between components that ensures loose
-coupling, isolation, location transparency, and provides the means to delegate errors as messages. Employing explicit
-message-passing enables load management, elasticity, and flow control by shaping and monitoring the message queues in
-the system and applying back-pressure when necessary. Location transparent messaging as a means of communication makes
-it possible for the management of failure to work with the same constructs and semantics across a cluster or within a
-single host. Non-blocking communication allows recipients to only consume resources while active, leading to less system
-overhead. —\[[Reactive Manifesto][RM]\]
+coupling, isolation, location transparency, and provides the means to delegate errors as messages. …
+—\[[Reactive Manifesto][RM]\]
 
-To understand what this means, we look to the glossary for definitions. First we look at "asynchronous":
+Breaking this explanation down, the *Reactive Manifesto*'s Glossary defines "asynchronous":
 
 > In the context of this manifesto we mean that the processing of a request occurs at an arbitrary point in time,
 sometime after it has been transmitted from client to service. The client cannot directly observe, or synchronize with,
@@ -52,38 +43,47 @@ the execution that occurs within the service. This is the antonym of synchronous
 client only resumes its own execution once the service has processed the request.
 —\[[Reactive Manifesto Glossary][RM.Async]\]
 
-In this definition, the manifesto takes the position that synchronous message-passing is antithetical to a reactive
-system. A client is not allowed to wait to ensure that the server has actually received the message. In "asynchronous
-message-passing", a client fires off a message to a server's mailbox. The server then processes messages from its
-mailbox in whatever order it deems appropriate (generally <abbr title="First-In First-Out">FIFO</abbr> order). This is
-analagous to the client dropping a letter addressed to the server in a postal box and letting the postal system deliver
-the message. The client sends and the server receives. In "synchronous message-passing", a client pauses execution until
-the server is ready to rendezvous with the client. When that happens, the message is passed directly to the server via a
-channel. The analogy here is the client and server meeting at a preplanned rendezvous to exchange the message; if one
-party is not there, the other will wait at the rendezvous point. The client gives and the server takes.
+By this definition, the manifesto asserts that synchronous message-passing is antithetical to a reactive system. A
+client must not wait to ensure that the server has received the message. Before we handle that argument, let's take a
+look at the differences between asynchronous and synchronous message-passing.
 
-<!--That must be done indirectly, through some other mechanism, effectively baking at-most-once delivery into the
-system. In order to get any delivery guarantees, another process must handle delivery guarantees. Such guarantees are
-progressively more limiting and expensive in an asynchronous system. At-least-once delivery requires the system to track
-and manage the message internally and requires some level of idempotence from the message to ensure multiple deliveries
-don't have extra side effects. Exactly-once delivery is even more expensive in terms of overhead required from the
-messaging system to ensure delivery. In some ways, this is alright. If lost or over-delivered messages are a part of the
-system, then the system needs to be able to tolerate these scenarios.-->
+Asynchronous message-passing is similar to dropping a letter in the mail and relying on the postal system to deliver the
+message. Keywords here are `send` or `post` for the client and `receive` for the server with a `mailbox` being the means
+of addressing messages.
 
-There is an assumption implied in this definition that synchronous processing is bad, in that it must prevent
-concurrency. However, many communications between a client and a server are in the form of a query. In order to query a
-server, a client must form the request in such a way that an asynchronous reply message can be posted to its own mailbox
-when the result is available. The client then is freed to handle other work until the reply is received—though often
-there is no suitable work to be done. This freedom forces the client to have some way to keep track of or pass state
-between its query and the server's reply so that the client can resume where it left off. Effectively a client needs to
-be written as a finite-state machine or broken out into a set of actors akin to implementing a continuation pattern. All
-this is glued together with an unreliable, at-most-once message delivery layer. Asynchronous message-passing hasn't
-changed the fact that, in order to make progress on a particular message, a process still needs to wait for an answer to
-its query. It's just added several requirements on the client to keep track of more things in the event of a failure.
+In synchronous message-passing, the client and the server have a common rendezvous point. When both are at the
+rendezvous, the client hands the message to the server directly. If only one party is at the rendezvous, they may wait
+for their counterpart to arrive in order to perform the handoff. Keywords here are `give` for the client and `take` for
+the server with a `channel` as the rendezvous point.
 
-Instead of "asynchronous", I think that the "non-blocking" achieves the reactive goals better without imposing the
-additional burdens above. Indeed, "non-blocking" is used later in the manifesto's definition for the "message-driven"
-property. Let's see how the manifesto defines "non-blocking":
+Asynchronous message-passing fits well into the postal system analogy. Each user has their own mailbox. The postal
+service provides at-most-once delivery by default. They also offer at-least-once (bulk mail) and exactly-once (signature
+confirmation) services, but at an additional cost. Sending a message to a mailbox is as simple as attaching the mailbox
+address to the message. In order to get a response, you must include a self-addressed reference to your own mailbox.
+
+Synchronous message-passing is similar to two agents meeting at a pre-arranged location in order to exchange
+information. The sender doesn't need to rely on anyone else to guarantee that his message has been delivered as he gives
+the message directly to the recipient. If the sender really doesn't care about that guarantee, he can
+instead hire a courier to wait with the message at the rendezvous point for minimal cost. A message may also contain a
+future location where the sender will be waiting for a reply from the recipient.
+
+The manifesto bases its claims on the assertion that synchronous processing necessarily prevents concurrency, but this
+assertion is faulty. As noted above, a synchronous rendezvous can be turned into an asynchronous send by spawning a new
+process to manage passing the message. In order to guarantee exactly-once delivery on top of an asynchronous send
+requires significant additional costs and tracking by the messaging system.
+In addition, many messages between components are queries for information and are not sent just for their side-effects.
+Often, within a thread of execution, there is no other beneficial work to be done until the query has been answered. In
+the asynchronous context, a client must either be written as a finite-state machine or be structured as a series of
+continuations with state tracked and passed along. In addition, because these messages only receive a best-effort
+guarantee, the system must be able to handle dropped messages at any of the interaction points.
+
+I propose that the use of asynchronous in the *Reactive Manifesto* is better served by the term "non-blocking". Indeed,
+the term is used later in the manifesto's statement of the "message-driven" property.
+
+> … Non-blocking communication allows recipients to only consume resources while active, leading to less system
+overhead. —\[[Reactive Manifesto][RM]\]
+
+The manifesto goes on to define "non-blocking":
 
 > In concurrent programming an algorithm is considered non-blocking if threads competing for a resource do not have
 their execution indefinitely postponed by mutual exclusion protecting that resource. In practice this usually manifests
@@ -94,96 +94,83 @@ resource to become available. This may be complemented by allowing the client of
 notified when the resource is available or the operation has completed. —\[[Reactive Manifesto Glossary][RM.NonB]\]
 
 "Non-blocking" and "synchronous message-passing" as defined above are not mutually exclusive. The manifesto asserts that
-they are, but when a mailbox is empty, a server must wait for a message to be delivered before it can perform any work.
-The server's wait for new messages is inherently synchronized, yet it frees up resources so that other processes may
-execute. This is the fundamental principle. Processes need to be written so as to enable concurrency; if a needed
-resource is not ready, a process can halt and allow other ready processes to execute without blocking their flow. The
-server's side of asynchronous message-passing proves that waiting on one process does not imply blocking all others.
+they are, but the server portion of asynchronous message-passing is still bound to wait by the mailbox if it is empty.
+The server's wait for new messages is inherently synchronized, yet in doing so, it frees up its resources so that other
+processes may execute. This is the fundamental principle of concurrency. Processes need to be written such that if a
+needed resource is not available, a process can suspend and allow other ready processes to execute without blocking
+their flow. The server's side of asynchronous message-passing proves that waiting by one process does not imply blocking
+all others.
 
-In fact, all the mechanisms of asynchronous message-passing can be succinctly built from the primitives of synchronous
-message-passing. A synchronous give can be converted into an asynchronous send by spawning a short-lived process to wait
-for the server to take. Multiple offers to give messages to a server can be handled in a fair way by the server, taking
-offers in a similar FIFO order. A reply is handled by the client passing another rendezvous point (channel) to the
-server, and the server can make that reply asynchronous in a similar manner. But, if we free ourselves from being
-limited by asynchroneity at the message-passing point, we can open up a whole new set of options.
+In fact, all demonstrated in the analogies above, the mechanisms of asynchronous message-passing can be succinctly built
+from the primitives of synchronous rendezvous. A synchronous `give` can be converted into an asynchronous `send` by
+spawning a short-lived process to wait for the server to `take`. Multiple offers to `give` can be prioritized by the
+server. By freeing ourselves from the constraints of explicitly asynchronous communication systems get access to a more
+powerful set of constructs.
 
-Certain implementations of synchronous message-passing libraries allow for non-deterministic handling of rendezvous by
-providing primitives that allow choosing between several possible alternatives. In [Hopac][], for instance, a process can
-offer to both give and await a timeout at the same time, choosing to execute the logic associated with which ever option
-is committed to first. Take the following example. Here we have a communication channel and a server which will either
-take a message if one is available and return a hello, or it will timeout after waiting 1 second and return a timed out
-string:
+Languages and libraries that provide synchronous message-passing primatives also provide mechanisms to allow for
+non-deterministic handling of rendezvous, selecting from among several possible alternatives. In [Hopac][], an F#
+library modeled after [Concurrent ML][CML], a process can offer to `give` a message and await a timeout at the same
+time. The process will commit to the set of actions associated with which event occurs first. For example, here we have
+a server which takes a message if one is available and says "Hello". If no message is available within one second, the
+server will instead commit to saying "Timed out...".
 *)
 (*** define-output: hopac1 ***)
 let ch = Ch<string>()
-
 let tryHello =
   Alt.choose [
     Ch.take ch ^-> sprintf "Hello, %s!"
     timeOutMillis 1000 ^->. "Timed out..."
   ]
-
 queue <| Ch.give ch "World"
-
 run tryHello
 (**
 produces
 *)
 (*** include-it: hopac1 ***)
 (**
-If we introduce a delay before the give:
+By introducing a two-second delay before the give:
 *)
 (*** define-output: hopac2 ***)
 queue <| timeOutMillis 2000 ^=>. Ch.give ch "Panda"
 run tryHello
 (**
-Then `tryHello` times out and returns the timeout message.
+`tryHello` times out and instead produces
 *)
 (*** include-it: hopac2 ***)
 (**
-To bring it back to our analogies from before, a server may go to a rendezvous point and wait for a possible message. If
-no message is available after a certain time, it might go and do something else. The client also has this same option
-when giving a message. If no server takes the message in a certain amount of time, then the client might try other
-options. This way, the client knows that its message has been handed off successfully.
-
-The real power of synchronous message-passing, though, comes in its ability to compose. Alternates (`Alt` in the code
-above), can be composed and chained together.
+This exposes the real power of synchronous message-passing. The type of `tryHello` is `Alt<string>`. That means it can
+be composed with other `Alt`-types to build larger components. `tryHello` could be one of several alternatives that a
+higher-level abstraction could use in in its own processing.
 
 > By starting with base-event values to represent the communication operations, and providing combinators to
 associate actions with events and to build nondeterministic choices of events, we provide a flexible mechanism for
 building new synchronization and communication abstractions. —\[John Reppy, [Concurrent Programming in ML][JRep99], p. 124\]
 
-Synchronous message-passing also has the advantage that its typical failure mode is deadlock, which can be detected
-quickly, whereas asynchronous message-passing typically delays the detection of errors until a mailbox is full (which
-in the case of an unbounded mailbox, may mean the entire process is out of memory).
+John Reppy also contends that synchronous message-passing has the advantage that its typical failure mode is deadlock,
+which can be detected quickly, whereas asynchronous message-passing typically delays the detection of errors until a
+mailbox is full (which in the case of an unbounded mailbox, may mean the entire process is out of memory).
 
-John Reppy's book, quoted above, presents Concurrent ML which is a set of concurrent extensions built upon Standard ML.
-These extensions provide first-class synchronous messaging primitives as well as the manner in which these units can be
-broken down composed so as to enable concurrent programming from within the structure of the largely sequential SML. In
-its first iteration, back in the 1990's, CML was written to enable concurrency on uniprocessors, which were the
-predominant architecture. Nowadays, in the .NET world, but particularly in F#, we have a great port of these primitives
-in Hopac.
+*Concurrent Programming in ML*, quoted above, presents Concurrent ML as a set of extensions built upon Standard ML.
+These extensions provide first-class synchronous primitives and provides constructs which allow these units to be
+composed. Back in the 1990's when it was created, the dominant processor type was single-core uniprocessors. CML was
+written designed to enable concurrency on these machines. Hopac provides these primitives to .NET world and particularly
+to F#. The [Go][] language provides "[goroutines][GoConc]" and other synchronous programming constructs as part of the
+language. [Concurrency is not parallelism][RPik12v], but software that is written to leverage concurrency is enabled to
+take advantage of the parallelism provided by modern hardware.
 
-Overall, the Reactive Manifesto lays out some really good principles for how modern systems ought to be design, but
-the way it presents those principles should be taken with a grain of salt. We need to ensure that the reasoning
-presented starts from a good foundation and isn't being offered *post hoc*. The actor model is gaining a lot of traction
-these days with languages like [Erlang][] and actor systems like [Akka][] and [Akka.Net][], but perhaps we should be
-thinking a little more and seeing if there are better primitives for building our systems.
+Concurrency is a large and growing concern in software engineering. The *Reactive Manifesto*
+lays out some good principles, but its claims should be taken with a grain of salt. The goals of the manifesto can be
+achieved without solely relying on asynchronous message-passing. Synchronous message-passing can provide a more powerful
+set of abstractions while still being easier to reason about.
 
-  [Akka]:http://akka.io
-  [Akka.Net]:http://getakka.net
-  [Erlang]:http://www.erlang.org/
+  [CML]:http://cml.cs.uchicago.edu/
+  [Go]:https://golang.org/
+  [GoConc]:https://golang.org/doc/effective_go.html#concurrency
   [RM]:http://www.reactivemanifesto.org/
   [RM.Async]:http://www.reactivemanifesto.org/glossary#Asynchronous
   [RM.NonB]:http://www.reactivemanifesto.org/glossary#Non-Blocking
-  [ALa15]:https://github.com/blog/2047-language-trends-on-github
   [CSør15]:http://blog.geist.no/an-actor-model-example-with-akka-net/
-  [JAtw04]:https://blog.codinghorror.com/threading-concurrency-and-the-most-powerful-psychokinetic-explosive-in-the-univ/
   [JRep99]:http://www.cambridge.org/tv/academic/subjects/computer-science/distributed-networked-and-mobile-computing/concurrent-programming-ml
-  [PYLP]:https://pypl.github.io/PYPL.html
   [RPik12v]:https://vimeo.com/49718712
-  [SpotifyCheatSheet]:http://nomad8.com/squadschaptersguilds/
-  [HWikiRefTrans]:https://wiki.haskell.org/Referential_transparency
-  [WPdtKA]:https://en.wikipedia.org/wiki/Drinking_the_Kool-Aid
   [Hopac]:https://hopac.github.io/Hopac/Hopac.html
 *)
