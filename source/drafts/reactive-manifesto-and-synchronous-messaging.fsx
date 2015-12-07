@@ -16,7 +16,7 @@ run <| Alt.unit ()
 (**
 
 Concurrency. It's a concept that is becoming increasingly important to mainstream software engineers. Processor speeds,
-which increased greatly in the 1990, have generally plateaued over the last decade. Over that time, manufacturers have
+which increased greatly in the 1990s, have generally plateaued over the last decade. Over that time, manufacturers have
 increased the number of cores in a processor to increase processing power. Most mainstream computers today have at least
 two cores; the laptop used to compose this article has four. [The free lunch is over][JAtw04]; there is no faster
 processor that will speed up a sequential application. Today's software must be written to take advantage of concurrency
