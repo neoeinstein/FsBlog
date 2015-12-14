@@ -16,12 +16,12 @@ run <| Alt.unit ()
 (**
 
 Concurrency. It's a concept that is becoming increasingly important to mainstream software engineers. Processor speeds,
-which increased greatly in the 1990s, have generally plateaued over the last decade. Over that time, manufacturers have
-increased the number of cores in a processor to increase processing power. Most mainstream computers today have at least
-two cores; the laptop used to compose this article has four. [The free lunch is over][JAtw04]; there is no faster
-processor that will speed up a sequential application. Today's software must be written to take advantage of concurrency
-and parallelism, and understanding these concepts is the key to writing software which is highly-performant and
-responsive.
+which increased greatly in the 1990s, have plateaued over the last decade. These days, processor manufacturers are
+adding more cores to their processors. Most mainstream computers today have at least two cores.
+[The free lunch is over][JAtw04]. We can no longer just drop in the latest and greatest processor to boost performace.
+This shift in the underlying architecture requires a corresponding shift in the programs that it executes.
+In order to write software which is highly-performant and responsive, we must understand how
+to leverage concurrency. By doing so, we can unlock the benefits of the parallelism afforded by modern processors.
 
   [JAtw04]:https://blog.codinghorror.com/threading-concurrency-and-the-most-powerful-psychokinetic-explosive-in-the-univ/
 *)

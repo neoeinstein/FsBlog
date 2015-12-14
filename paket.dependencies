@@ -11,5 +11,7 @@ nuget NUnit.Runners ~> 2
 github forki/FsUnit FsUnit.fs
 
 group posts
-  source https://nuget.org/api/v2
+source https://nuget.org/api/v2
 nuget Hopac
+nuget Chiron prerelease
+nuget NodaTime
