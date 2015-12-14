@@ -1,5 +1,5 @@
 ﻿(*@
-    Layout = "draft";
+    Layout = "post";
     Title = "Chiron: JSON + Ducks + Monads";
     Date = "2015-12-13T14:15:16";
     Tags = "F# Chiron FsAdvent JSON";
