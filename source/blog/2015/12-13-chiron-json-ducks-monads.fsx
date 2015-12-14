@@ -103,7 +103,7 @@ This results in an error message clearly indicating where the parsing error occu
 (*** include-it:tryParseExample ***)
 (**
 Converting data from `Json` to `string` and back again is all well and good, but every JSON library needs to provide a
-means to convert JSON strings into a Plain Old *[insert language]* Object. Most .NET converters rely on reflection to
+means to convert JSON strings into Plain Old *[insert language]* Objects. Most .NET converters rely on reflection to
 inspect data objects and perform conversion by convention. Chiron doesn't rely on convention or decorate members with
 attributes. Instead, any type that has the static methods `FromJson` and `ToJson` can be serialized or deserialized.
 Chiron's `serialize` and `deserialize` functions use [statically-resolved type parameters][SRTP], similar to duck-typing,
