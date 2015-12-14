@@ -1,7 +1,7 @@
 ﻿(*@
-    Layout = "post";
+    Layout = "draft";
     Title = "Chiron: JSON + Ducks + Monads";
-    Date = "2015-12-13T20:00:00";
+    Date = "2015-12-13T14:15:16";
     Tags = "F# Chiron FsAdvent JSON";
     Description = "Getting started with Chiron.";
 *)
@@ -194,9 +194,11 @@ you don't control? We'll take a look at how to provide custom serializers for th
 (**
 *)
 (**
-*This post is a part of the [F# Advent Calendar in English][FsAdvent]. Many thanks to Sergey Thion for promoting this event.
-For more posts on F# and functional programming throughout December, check out the list of posts on his site.*
+*This post is a part of the [F# Advent Calendar in English][FsAdvent]. Many thanks to
+[Sergey Tihon][SergeyTihonTwitter] for promoting this event. For more posts on F# and functional programming
+throughout December, check out the list of posts on his site.*
 
   [FsAdvent]:https://sergeytihon.wordpress.com/2015/10/25/f-advent-calendar-in-english-2015/
+  [SergeyTihonTwitter]:https://www.twitter.com/sergey_tihon
 *)
 
