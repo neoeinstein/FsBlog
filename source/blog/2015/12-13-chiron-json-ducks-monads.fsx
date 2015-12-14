@@ -151,7 +151,7 @@ The `*>` operator that we used in `ToJson` discards the `JsonResult<'a>` (which 
 but continues to build upon the `Json` object from the previous operation. By chaining these operations together, we
 build up the members of a `Json.Object`.
 
-Serialization is done using `FromJson`:
+Deserialization is done using `FromJson`:
 *)
 (*** do-not-eval ***)
   static member FromJson (_:User) =
