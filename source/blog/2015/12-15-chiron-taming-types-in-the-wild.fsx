@@ -149,8 +149,6 @@ generic `'a list` serializer and include a parameter so that we can plug in an 
 let listToJsonWith serialize lst =
   Array <| List.map serialize lst
 (**
-The `serialize` parameter provides the hook we need in order to provide our custom serializer.
-
 The deserializer is a little more complicated because we can't just map it over the list.
 We need a function that maps `Json -> JsonResult<Instant list>`. Chiron already has a function that fits this need:
 [`fromJsonFold`][fromJsonFold]. Chiron uses this function to support its default serialization of arrays and lists.
