@@ -142,7 +142,7 @@ Before we even get to running this code, the compiler has already started disagr
 
 Where did we go wrong? The issue is that an `a' list` is serializable through Chiron's default functions if and only
 if `'a` contains the necessary `ToJson`/`FromJson` functions. In this case, `Instant` doesn't have the needed hooks for
-Chiron's default serialization to hook into, so we wrote our own serialization functions. As a precursor to serializing
+Chiron's default serialization to hook into; we wrote our own serialization functions. As a precursor to serializing
 an `Instant list`, we first define a function that can serialize a generic `'a list`.
 *)
 let listToJsonWith serialize lst =
