@@ -151,7 +151,7 @@ let listToJsonWith serialize lst =
 (**
 The deserializer is a little more complicated because we can't just map it over the list.
 We need a function that maps `Json -> JsonResult<Instant list>`. Chiron already has a function that fits this need:
-[`fromJsonFold`][fromJsonFold]. Chiron uses this function to support its default serialization of arrays and lists.
+[`fromJsonFold`][fromJsonFold], which it uses to support default serialization of arrays and lists.
 `fromJsonFold` iterates over a `Json list` wrapped by a `Json.Array` and produces a `JsonResult` over the list. This
 function is marked `internal`, though, so we don't have direct access to it. Instead, we can extract the function's
 logic and refactor it to fit our needs. Replacing `fromJson` with a new `deserialize` parameter gives us a generic
