@@ -189,7 +189,7 @@ This should give you a start toward serializing and deserializing your own custo
 you don't control? We'll take a look at how to provide custom serializers for those types, in my
 [next post][ChironPart2].
 
-  [ChironPart2]:# "Coming soon!"
+  [ChironPart2]:/blog/2015/12-15-chiron-taming-types-in-the-wild/index.html
 *)
 (**
 *)
