@@ -3,7 +3,7 @@
     Title = "Chiron: Taming Types in the Wild";
     Date = "2015-12-15T05:00:00Z";
     Tags = "F#, Chiron, FsAdvent, JSON, NodaTime";
-    Description = "Using Chiron to serialize types that you can't control.";
+    Description = "Using Chiron to serialize types that you can't control";
 *)
 (**
 In my [last post][Chiron1], I gave an overview of [Chiron][], described how to parse JSON, and demonstrated how to

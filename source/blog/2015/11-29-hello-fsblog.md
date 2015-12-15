@@ -3,7 +3,7 @@
     Title = "Hello, FsBlog!";
     Date = "2015-11-29T23:27:31";
     Tags = "";
-    Description = "Getting started — all over again.";
+    Description = "Getting started — all over again";
 }
 
 It has been a long time since I have done any sort of blogging. Now that I've committed to an F# Advent post, it's time that I pulled a fork off [FsBlog][FsBlog] and set up shop on `gh‑pages`.

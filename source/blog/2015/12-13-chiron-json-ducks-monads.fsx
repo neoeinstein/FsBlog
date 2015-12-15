@@ -3,7 +3,7 @@
     Title = "Chiron: JSON + Ducks + Monads";
     Date = "2015-12-13T14:15:16";
     Tags = "F#, Chiron, FsAdvent, JSON";
-    Description = "Getting started with Chiron.";
+    Description = "Getting started with Chiron";
 *)
 (**
 There are a multitude of ways to handle JSON data on the .NET framework. You can pull in [Json.NET][], use the
