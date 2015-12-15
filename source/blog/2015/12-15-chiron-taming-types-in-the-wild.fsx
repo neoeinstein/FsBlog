@@ -141,10 +141,10 @@ Before we even get to running this code, the compiler has already started disagr
     Error: No overloads match for method 'ToJson'. …
 
 Where did we go wrong? The issue is that an `a' list` is serializable through Chiron's default functions if and only
-if `'a` contains the necessary `ToJson`/`FromJson` functions. In this case, `Instant` doesn't have the needed hooks for
-Chiron's default serialization to hook into. Since we wrote our own serialization functions, we need need to create the
-hooks ourself. Instead of defining a function specialized to `Instant list`s, we can write a function that exposes the
-hook we need and can serialize a generic `'a list`.
+if `'a` contains the necessary `ToJson`/`FromJson` functions. `Instant` doesn't have the needed hooks needed for
+Chiron's default serialization functions. Since we wrote our own serialization for `Instant`, we need need to write a
+function to serialize our list too. Instead of defining a specialized `Instant list` serializer, we can instead write a
+generic `'a list` serializer and include a parameter so that we can plug in an arbitrary serializer.
 *)
 let listToJsonWith serialize lst =
   Array <| List.map serialize lst
