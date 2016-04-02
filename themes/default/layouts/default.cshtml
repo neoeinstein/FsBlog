@@ -1,4 +1,4 @@
-﻿@using System.Linq
+@using System.Linq
 @helper PostDate(DateTime rawDate) {
     <time datetime="@rawDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss")" pubdate data-updated="true">@rawDate.ToString("MMM d, yyyy")</time>
 }
@@ -7,12 +7,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     @if (Title == "INDEX") {
-      <title>@Model.BlogName</title>
-     } else {
-       <title>@Model.BlogName — @Title</title>
-     }
-     <link rel="shortcut icon" href="@(Model.Root)favicon.png">
-     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+      <title>@Model.SiteTitle</title>
+    } else {
+      <title>@Model.SiteTitle — @Title</title>
+    }
+    <link rel="shortcut icon" href="@(Model.Root)favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="alternate" href="@Model.Root/rss.xml" title="@Model.SiteTitle" type="application/rss+xml">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -35,9 +36,9 @@
   <body class="@BodyClass">
   	<div class="wrapper">
 	  <header>
-	  	  <a href="@(Model.Root)index.html" class="falseheader">@Model.BlogName</a>
+	  	  <a href="@(Model.Root)index.html" class="falseheader">@Model.SiteTitle</a>
         <div><strong><em>Marcus Griep</em></strong></div>
-        <p>Writings on software engineering.</p>
+        <p>@Model.SiteSubtitle</p>
         <ul>
           <li><a href="https://twitter.com/neoeinstein"><strong>Follow Me</strong> on <span class="fa fa-twitter"></span> twitter</a></li>
           <li><a href="https://github.com/neoeinstein"><strong>See My Code</strong> on <span class="fa fa-github"></span> github</a></li>

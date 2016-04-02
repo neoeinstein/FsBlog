@@ -15,7 +15,7 @@ and tasks that operate with the static site generation.
 #r "RazorEngine.dll"
 #r "FsBlogLib.dll"
 #r "FSharp.Configuration.dll"
-#r "suave.dll"
+#r "Suave.dll"
 
 open Fake
 open Fake.Git
@@ -30,14 +30,13 @@ open FsBlogLib
 open FSharp.Configuration
 open Suave
 open Suave.Web
-open Suave.Http
-open Suave.Http.Files
+open Suave.Files
 open Suave.Sockets
 open Suave.Sockets.Control
 open Suave.Sockets.AsyncSocket
 open Suave.WebSocket
 open Suave.Utils
-open Suave.Types
+open Suave.Operators
 
 
 // --------------------------------------------------------------------------------------
@@ -47,8 +46,8 @@ Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 type Config = YamlConfig<"config/config.yml">
 
 let config = new Config()
-let root = config.url.AbsoluteUri
 let title = config.title
+let subtitle = config.subtitle
 let description = config.description
 let gitLocation = config.gitlocation
 let gitbranch = config.gitbranch
@@ -79,11 +78,21 @@ let rsscount = 20
 // Regenerates the site
 // --------------------------------------------------------------------------------------
 
-let buildSite (updateTagArchive, root) =
+type RoutingMode =
+    | Production
+    | Preview
+
+let buildSite routing updateTagArchive =
+
+    let root =
+        match routing with
+        | Production -> config.url.AbsoluteUri
+        | Preview -> "http://localhost:8080"
+
     let dependencies = [ yield! Directory.GetFiles(layouts) ]
-    let noModel = { Root = root; MonthlyPosts = [||]; Posts = [||]; TaglyPosts = [||]; GenerateAll = true; BlogName = title }
+    let noModel = { Root = root; SiteTitle = title; SiteSubtitle = subtitle; MonthlyPosts = [||]; Posts = [||]; TaglyPosts = [||]; GenerateAll = true }
     let razor = new Razor(layouts, Model = noModel)
-    let model =  Blog.LoadModel(title, tagRenames, Blog.TransformAsTemp (template, source) razor, root, blog)
+    let model =  Blog.LoadModel(tagRenames, Blog.TransformAsTemp (template, source) razor, root, blog, title, subtitle)
 
     // Generate RSS feed
     Blog.GenerateRss root title description model rsscount (output ++ "rss.xml")
@@ -131,7 +140,7 @@ let handleWatcherEvents (events:FileChange seq) =
         traceImportant <| sprintf "%s was changed." fi.Name
         match fi.Attributes.HasFlag FileAttributes.Hidden || fi.Attributes.HasFlag FileAttributes.Directory with
         | true -> ()
-        | _ ->  buildSite (false, "/") // TODO optimize based on which file has changed
+        | _ ->  buildSite Preview false // TODO optimize based on which file has changed
     refreshEvent.Trigger()
 
 let socketHandler (webSocket : WebSocket) =
@@ -140,7 +149,7 @@ let socketHandler (webSocket : WebSocket) =
       let! refreshed =
         Control.Async.AwaitEvent(refreshEvent.Publish)
         |> Suave.Sockets.SocketOp.ofAsync
-      do! webSocket.send Text (UTF8.bytes "refreshed") true
+      do! webSocket.send Text (System.Text.Encoding.UTF8.GetBytes "refreshed") true
   }
 
 let startWebServer () =
@@ -152,11 +161,11 @@ let startWebServer () =
         }
     let app =
       choose [
-        Applicatives.path "/websocket" >>= handShake socketHandler
+        Filters.path "/websocket" >=> handShake socketHandler
         Writers.setHeader "Cache-Control" "no-cache, no-store, must-revalidate"
-        >>= Writers.setHeader "Pragma" "no-cache"
-        >>= Writers.setHeader "Expires" "0"
-        >>= browseHome ]
+        >=> Writers.setHeader "Pragma" "no-cache"
+        >=> Writers.setHeader "Expires" "0"
+        >=> browseHome ]
     startWebServerAsync serverConfig app |> snd |> Async.Start
     Process.Start "http://localhost:8080/index.html" |> ignore
 
@@ -166,14 +175,17 @@ let startWebServer () =
 
 /// Regenerates the entire static website from source files (markdown and fsx).
 Target "GenerateLocal" (fun _ ->
-    buildSite (true, "/")
+    buildSite Preview true
 )
 
 Target "GenerateRelease" (fun _ ->
-    buildSite (true, root)
+    buildSite Production true
 )
 
 Target "Preview" (fun _ ->
+
+    buildSite Preview true
+
     use watcherDynamic = !! (source + "**/*.*") |> WatchChanges (fun changes ->
         printfn "Dynamic: %A" changes
         handleWatcherEvents changes
@@ -227,7 +239,7 @@ Target "GitPublish" (fun _ ->
     DeleteDir (deploy ++ "blog")
     CopyRecursive output deploy true |> ignore
     CommandHelper.runSimpleGitCommand deploy "add -A ." |> printfn "%s"
-    let cmd = sprintf """commit -a -m "Update generated web site (%s)""" (DateTime.Now.ToString("dd MMMM yyyy"))
+    let cmd = sprintf @"commit -a -m ""Update generated web site (%s)""" (DateTime.Now.ToString("dd MMMM yyyy"))
     CommandHelper.runSimpleGitCommand deploy cmd |> printfn "%s"
     Branches.push deploy
 )
@@ -245,12 +257,10 @@ Target "Install" (fun _ ->
 )
 
 "DoNothing" =?>
-("Install", hasBuildParam "theme")  ==>
+("Install", hasBuildParam "theme") ==>
 "GenerateLocal" ==> "Preview"
 
-"Clean" ==>
-"GenerateRelease" ==>
-"GitClone" ==> "GitPublish"
+"GenerateRelease" ==> "GitClone" ==> "GitPublish"
 
 // --------------------------------------------------------------------------------------
 // Run a specified target.

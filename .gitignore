@@ -6,6 +6,7 @@
 [Dd]eploy/
 
 # User-specific files
+.vs
 *.suo
 *.user
 *.sln.docstates
@@ -173,3 +174,4 @@ $RECYCLE.BIN/
 # Mac desktop service store files
 .DS_Store
 .paket/paket.exe
+*.orig

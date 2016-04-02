@@ -13,18 +13,18 @@ open FSharp.Literate
 
 /// Represents the model that is passed to all pages
 type Model =
-    { Posts: BlogHeader[]
-      MonthlyPosts: (int * string * seq<BlogHeader>)[]
-      TaglyPosts: (string * string * seq<BlogHeader>)[]
-      GenerateAll: bool
-      Root: string
-      BlogName: string }
-
+  { Posts : BlogHeader[]
+    MonthlyPosts : (int * string * seq<BlogHeader>)[]
+    TaglyPosts : (string * string * seq<BlogHeader>)[]
+    GenerateAll : bool
+    Root : string
+    SiteTitle : string
+    SiteSubtitle : string }
 
 module Blog =
 
   /// Walks over all blog post files and loads model (caches abstracts along the way)
-  let LoadModel(blogname, tagRenames, transformer, (root:string), blog) =
+  let LoadModel(tagRenames, transformer, (root:string), blog, title, subtitle) =
     let urlFriendly (s:string) = s.Replace("#", "sharp").Replace(" ", "-").Replace(".", "dot")
     let posts = LoadBlogPosts tagRenames transformer blog
     let uk = System.Globalization.CultureInfo.GetCultureInfo("en-GB")
@@ -49,7 +49,8 @@ module Blog =
                 select (year, uk.DateTimeFormat.GetMonthName(month), g :> seq<_>) }
         |> Array.ofSeq
       Root = root.Replace('\\', '/')
-      BlogName = blogname }
+      SiteTitle = title
+      SiteSubtitle = subtitle }
 
   let TransformFile template hasHeader (razor:FsBlogLib.Razor) prefix current target sourceUrl =
     let html =
