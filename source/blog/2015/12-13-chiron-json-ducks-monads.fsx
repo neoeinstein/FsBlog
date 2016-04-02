@@ -111,6 +111,7 @@ to hook in to the appropriate methods at compile time.
 
   [SRTP]:https://msdn.microsoft.com/en-us/library/dd548046.aspx
 
+<a name="user-type"></a>
 As an example, let's create a data type for a user:
 *)
 (*** hide ***)
@@ -131,6 +132,11 @@ type User =
   { Name: string
     IsAdmin: bool }
 (**
+> For an explanation that uses fewer custom operators and may be easier to follow, check out [this article][Chiron2.5] on the
+> `json{}` computation expression.
+
+  [Chiron2.5]:/blog/2016/04-02-chiron-computation-expressions/index.html
+
 Chiron uses a monadic type, `Json<'a>`, to build up the serialized `Json` type:
 *)
 (*** do-not-eval ***)
