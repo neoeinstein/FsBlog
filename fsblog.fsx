@@ -93,6 +93,12 @@ let buildSite routing updateTagArchive =
     let noModel = { Root = root; SiteTitle = title; SiteSubtitle = subtitle; MonthlyPosts = [||]; Posts = [||]; TaglyPosts = [||]; GenerateAll = true }
     let razor = new Razor(layouts, Model = noModel)
     let model =  Blog.LoadModel(tagRenames, Blog.TransformAsTemp (template, source) razor, root, blog, title, subtitle)
+    let isNotTaggedAsDraft p = Seq.contains "draft" p.Tags |> not
+    let model =
+      { model with
+          Posts = model.Posts |> Array.filter isNotTaggedAsDraft
+          MonthlyPosts = model.MonthlyPosts |> Array.map (fun (x,y,posts) -> x,y,Seq.filter isNotTaggedAsDraft posts)
+          TaglyPosts = model.TaglyPosts |> Array.map (fun (x,y,posts) -> x,y,Seq.filter isNotTaggedAsDraft posts) }
 
     // Generate RSS feed
     Blog.GenerateRss root title description model rsscount (output ++ "rss.xml")
