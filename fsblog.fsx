@@ -262,10 +262,11 @@ Target "Install" (fun _ ->
             CopyRecursive (themes ++ theme ++ "source") source true |> ignore
 )
 
-"DoNothing" =?>
+"Clean" =?>
 ("Install", hasBuildParam "theme") ==>
 "GenerateLocal" ==> "Preview"
 
+"Clean" ==>
 "GenerateRelease" ==> "GitClone" ==> "GitPublish"
 
 // --------------------------------------------------------------------------------------
