@@ -1,8 +1,8 @@
 (*@
-    Layout = "draft";
+    Layout = "post";
     Title = "Hopac: Getting Started with Jobs";
-    Date = "2016-04-06T18:30:00Z";
-    Tags = "F#, Hopac, Async, Tasks Parallel Library, draft";
+    Date = "2016-04-08T00:05:00Z";
+    Tags = "F#, Hopac, Async, Tasks Parallel Library";
     Description = "Synchronous messaging and lightweight threading";
 *)
 (*** hide ***)
