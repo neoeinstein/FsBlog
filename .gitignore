@@ -175,3 +175,7 @@ $RECYCLE.BIN/
 .DS_Store
 .paket/paket.exe
 *.orig
+
+*_temp_*
+*_.fsx
+*_.md
