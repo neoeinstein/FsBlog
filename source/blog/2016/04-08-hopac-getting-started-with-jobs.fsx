@@ -57,7 +57,11 @@ Hopac's `Job<'a>` has more in common with F#'s `Async<'a>` than the `Task<T>` ba
 a computation in progress, while a `Job<'a>` or `Async<'a>` represents a potential computation that can be invoked.
 Hopac also provides a `job{}` computation builder similar to `async{}`, but with several nice additions and a few
 idiosyncrasies. The biggest difference is that Hopac runs its jobs on threads dedicated to Hopac. Hopac pre-allocates
-one thread per processor.
+one Hopac thread per processor. These threads are managed directly by Hopac rather than being a part of a general .NET
+thread pool. The Hopac scheduler takes care of managing jobs, keeping track of which jobs are ready for execution and
+handling when a thread switches between jobs. Hopac is heavily optimized to minimize the overhead related to its
+management of jobs, providing better throughput and CPU utilization than `Async<'a>` and the TPL under workloads with
+many concurrent tasks.
 
 ## Dealing with the garbage
 
@@ -85,6 +89,12 @@ An application can request server garbage collection by adding the `gcServer` el
 For more information on GC settings, see the [MSDN documentation][MSDNGC].
 
   [MSDNGC]:https://msdn.microsoft.com/en-us/library/ee787088(v=vs.110).aspx#workstation_and_server_garbage_collection
+
+Hopac is written to handle a very large number of jobs (e.g., millions) concurrently. Each job is very lightweight,
+taking only a few bytes of memory for itself. In addition, `Job<'a>` is a simple .NET object requiring no disposal or
+finalization (as opposed to the `MailboxProcessor<'Msg>`, which is disposable). This means that when a job no longer
+has any references keeping it alive, it can be readily garbage collected and no special kill protocol is required for
+recursive jobs (servers/actors).
 
 ## The `job{}` computation expression
 
