@@ -56,10 +56,12 @@ Tomas Petricek's _[Asynchronous C# and F#][TPet10]_ series.
 Hopac's `Job<'a>` has more in common with F#'s `Async<'a>` than the `Task<T>` based model of C#. A `Task<T>` represents
 a computation in progress, while a `Job<'a>` or `Async<'a>` represents a potential computation that can be invoked.
 Hopac also provides a `job{}` computation builder similar to `async{}`, but with several nice additions and a few
-idiosyncrasies. The biggest difference is that Hopac runs its jobs on threads dedicated to Hopac. Hopac pre-allocates
-one Hopac thread per processor. These threads are managed directly by Hopac rather than being a part of a general .NET
-thread pool. The Hopac scheduler takes care of managing jobs, keeping track of which jobs are ready for execution and
-handling when a thread switches between jobs. Hopac is heavily optimized to minimize the overhead related to its
+idiosyncrasies.
+
+The biggest difference with `Async<'a>` is that Hopac runs its jobs on threads dedicated to Hopac. Hopac pre-allocates
+one Hopac thread per processor, and these threads are managed directly by Hopac rather than being a part of a general
+.NET thread pool. The Hopac scheduler takes care of managing jobs, keeping track of which jobs are ready for execution
+and handling when a thread switches between jobs. Hopac is heavily optimized to minimize the overhead related to its
 management of jobs, providing better throughput and CPU utilization than `Async<'a>` and the TPL under workloads with
 many concurrent tasks.
 
@@ -70,12 +72,12 @@ When you first start working with Hopac, you are likely to see the following war
 > WARNING: You are using single-threaded workstation garbage collection, which means that parallel programs cannot
 > scale. Please configure your program to use server garbage collection.
 
-This warning relates to the fact that workstation garbage collection performs garbage collection on the thread that
-triggered the collection. This means that any work scheduled on a thread that triggers a garbage collection is blocked
-from execution until the collection completes. With server garbage collection, each CPU receives its own heap and has
-a dedicated thread for garbage collection. There are some instances where you may want to ignore this warning, but
-blocking a Hopac worker thread can have unintended consequences across other Hopac threads due to the synchronous
-communication structure.
+This warning relates to the fact that workstation garbage collection executes on the thread that triggered the
+collection. If this thread happens to be one of the Hopac threads, the suspended job and any other jobs that may be
+waiting for that job will be blocked until the collection completes. With server garbage collection, each CPU
+receives its own heap and has a dedicated thread on which collections are executed. There are some instances where you
+may choose to ignore this warning, but blocking a Hopac worker thread can have unintended consequences across other
+Hopac threads due to its synchronous messaging design.
 
 An application can request server garbage collection by adding the `gcServer` element to its `app.config`:
 
@@ -91,16 +93,16 @@ For more information on GC settings, see the [MSDN documentation][MSDNGC].
   [MSDNGC]:https://msdn.microsoft.com/en-us/library/ee787088(v=vs.110).aspx#workstation_and_server_garbage_collection
 
 Hopac is written to handle a very large number of jobs (e.g., millions) concurrently. Each job is very lightweight,
-taking only a few bytes of memory for itself. In addition, `Job<'a>` is a simple .NET object requiring no disposal or
+taking only a few bytes of memory for itself. A `Job<'a>` is a simple .NET object requiring no disposal or
 finalization (as opposed to the `MailboxProcessor<'Msg>`, which is disposable). This means that when a job no longer
 has any references keeping it alive, it can be readily garbage collected and no special kill protocol is required for
 recursive jobs (servers/actors).
 
 ## The `job{}` computation expression
 
-For users experienced with F#'s `async{}` computation expression, `job{}` will feel very familiar. The form is nearly
+For users experienced with F#'s `async{}` computation expression, `job{}` will feel very familiar. The form is exactly
 the same as `async{}` with the added benefit that the bind operation is overloaded to accept `Job<'a>`, `Async<'a>`,
-and `Task<T>`. There are also added overloads that deal with more situations than the default `async{}`.
+`Task<T>`, and `IObservable<T>`. Here's an example of the computation expression in use:
 
 *)
 let doAThing (getThingAsync : Async<_>) delay = job {
@@ -109,11 +111,11 @@ let doAThing (getThingAsync : Async<_>) delay = job {
   return result
 }
 (**
-In this little piece of code, we can see a couple of things. First we see that, `getThingAsync` works just fine being
-the direct target of the bind operation. Second, we note that we used `asJob` when binding on `delay`. This is in part
-to help the compiler to infer the type of `delay` as without it, it doesn't know which of the several available bind
-operations should be used to infer its type. The `asJob` function is a noop which tells the compiler that `delay`
-needs to be a `Job<'a>` and avoids unnecessary upcasts. We could have done this instead with equivallent results:
+The first thing to note is that `getThingAsync` works just fine as the direct target of the bind operation (`let!`). In
+the second bind operation (`do!`), `asJob` was used when binding `delay`. The `asJob` function is a noop which tells
+the compiler that `delay` needs to be a `Job<'a>` without providing an explicit type or upcast. Without it, the compiler
+can't infer which of the several available bind overloads should be used. For those that prefer explicit function
+signatures, the following is equivalent:
 *)
 let doAThing2 (getThingAsync : Async<_>) (delay : Job<unit>) = job {
   let! result = getThingAsync
@@ -122,8 +124,10 @@ let doAThing2 (getThingAsync : Async<_>) (delay : Job<unit>) = job {
 }
 (**
 Jobs can be started by using `run`, `start`, or `queue` and are similar to the `Async` counterparts:
-`RunSynchronously`, `StartImmediate`, and `Start`. As is the advice for `Async`, you should only use `run` in a root
-context. Hopac will warn you if you use `run` inside a Hopac job as this can cause Hopac to deadlock.
+`RunSynchronously`, `StartImmediate`, and `Start`. As is the advice for `Async`, _`run` should only be used in a root
+context_. If you ever find yourself using `run` from inside of a `job{}` or `async{}`, you are probably doing something
+wrong. If Hopac detects that you are executing `run` on a Hopac thread, it will spit out a warning because this can
+result in deadlocks.
 *)
 (*** define-output:doAThingResult ***)
 let myResult = async { return 4; }
@@ -141,7 +145,7 @@ becomes ready first.
 
 Like `Async<'a>`, the same `Job<'a>` can be passed into a function and executed multiple times to get the intended
 effects. Hopac also offers a `Promise<'a>` type that can be used to memoize a job when you only want the
-computation—and its side-effects—to be executed once. Think of it as the concurrent alternative to `Lazy<T>`.
+computation—and its side-effects—to be executed once. Think of a promise as the concurrent alternative to `Lazy<T>`.
 `Promise<'a>` derives from `Alt<'a>`, so like `Alt<'a>`, it can be used in the same contexts as any other `Job<'a>`.
 
 As an example, compare the output of these two snippets which both use the job defined by `sideEffect`.
@@ -169,8 +173,9 @@ all future requests to read from the promise will immediately return the result 
 
 In future posts, I'll introduce the Hopac's messaging channels and the star of the show: alternatives. We'll also delve
 into synchronous messaging to reproduce an actor using Hopac's concurrency primitives and look at how Hopac can tame
-the live, push-based data streams and turn them into more manageable pull-based streams. In the meantime, I recommend
-the programming docs in the project's [GitHub docs][HopacGitHubDocs] folder and the [API documentation][HopacAPI] itself.
+the live, push-based data streams and turn them into more manageable pull-based streams. In the meantime, you can learn
+more about Hopac from the programming docs in the project's [GitHub docs][HopacGitHubDocs] folder and the from
+[Hopac API documentation][HopacAPI] page.
 
   [HopacGitHubDocs]:https://github.com/Hopac/Hopac/tree/master/Docs
   [HopacAPI]:https://hopac.github.io/Hopac/Hopac.html
