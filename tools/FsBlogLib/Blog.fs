@@ -17,14 +17,14 @@ type Model =
     MonthlyPosts : (int * string * seq<BlogHeader>)[]
     TaglyPosts : (string * string * seq<BlogHeader>)[]
     GenerateAll : bool
-    Root : string
+    Root : System.Uri
     SiteTitle : string
     SiteSubtitle : string }
 
 module Blog =
 
   /// Walks over all blog post files and loads model (caches abstracts along the way)
-  let LoadModel(tagRenames, transformer, (root:string), blog, title, subtitle) =
+  let LoadModel(tagRenames, transformer, (root:System.Uri), blog, title, subtitle) =
     let urlFriendly (s:string) = s.Replace("#", "sharp").Replace(" ", "-").Replace(".", "dot")
     let posts = LoadBlogPosts tagRenames transformer blog
     let uk = System.Globalization.CultureInfo.GetCultureInfo("en-GB")
@@ -48,7 +48,7 @@ module Blog =
                 sortByDescending (year, month)
                 select (year, uk.DateTimeFormat.GetMonthName(month), g :> seq<_>) }
         |> Array.ofSeq
-      Root = root.Replace('\\', '/')
+      Root = root
       SiteTitle = title
       SiteSubtitle = subtitle }
 
@@ -87,23 +87,32 @@ module Blog =
       TransformFile template false razor (Some prefix) current cached ""
       File.ReadAllText(cached)
 
-  let GenerateRss root title description model take target =
+  let GenerateRss (root : System.Uri) title description model take target =
     let count = Seq.length model.Posts
     let (!) name = XName.Get(name)
     let items =
       [| for item in model.Posts |> Seq.take (if count < take then count else take) ->
+           let rel = System.Uri("blog/" + item.Url + "/index.html", System.UriKind.Relative)
+           let abs = System.Uri(root, rel)
+           use sha256 = System.Security.Cryptography.HashAlgorithm.Create("SHA256")
+           let bytes = File.ReadAllBytes item.Source
+           let hash =
+             sha256.ComputeHash bytes
+             |> Array.map (sprintf "%02x")
+             |> String.concat ""
+
            XElement
             ( !"item",
               XElement(!"title", item.Title),
-              XElement(!"guid", root + "/blog/" + item.Url),
-              XElement(!"link", root + "/blog/" + item.Url + "/index.html"),
+              XElement(!"guid", hash),
+              XElement(!"link", string abs),
               XElement(!"pubDate", item.Date.ToUniversalTime().ToString("r")),
               XElement(!"description", item.Abstract) ) |]
     let channel =
       XElement
         ( !"channel",
           XElement(!"title", (title:string)),
-          XElement(!"link", (root:string)),
+          XElement(!"link", string root),
           XElement(!"description", (description:string)),
           items )
     let doc = XDocument(XElement(!"rss", XAttribute(!"version", "2.0"), channel))

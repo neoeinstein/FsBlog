@@ -13,7 +13,8 @@ type BlogHeader =
       Description: string
       Date: System.DateTime
       Url: string
-      Tags: seq<string> }
+      Tags: seq<string>
+      Source: string }
 
 
 module BlogPosts =
@@ -107,7 +108,8 @@ module BlogPosts =
           Abstract = abstr
           Description = lookup.["Description"]
           Tags = lookup.["Tags"].Split([|','|], System.StringSplitOptions.RemoveEmptyEntries) |> Array.map (fun s -> s.Trim() |> renameTag)
-          Date = lookup.["Date"] |> System.DateTime.Parse }
+          Date = lookup.["Date"] |> System.DateTime.Parse
+          Source = file }
       with _ -> failwithf "Invalid header in the following blog file: %s" file
 
   /// Loads information about all blog posts

@@ -9,7 +9,7 @@
 <p>Writings about programming and software engineering. Built on the F# static site generator <a href="https://github.com/fsprojects/FsBlog"><strong>FsBlog</strong></a>.</p>
 
 @if (Model.Posts.Length > 0) {
-  <h2>Latest Post: <a href="@(Model.Root)/blog/@Model.Posts[0].Url/index.html">@Model.Posts[0].Title</a></h2>
+  <h2>Latest Post: <a href="@(Model.Root)blog/@Model.Posts[0].Url/index.html">@Model.Posts[0].Title</a></h2>
   <blockquote>
   <p>@Model.Posts[0].Abstract</p>
   </blockquote>

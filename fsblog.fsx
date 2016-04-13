@@ -86,8 +86,8 @@ let buildSite routing updateTagArchive =
 
     let root =
         match routing with
-        | Production -> config.url.AbsoluteUri
-        | Preview -> "http://localhost:8080"
+        | Production -> config.url
+        | Preview -> System.Uri "http://localhost:8080/"
 
     let dependencies = [ yield! Directory.GetFiles(layouts) ]
     let noModel = { Root = root; SiteTitle = title; SiteSubtitle = subtitle; MonthlyPosts = [||]; Posts = [||]; TaglyPosts = [||]; GenerateAll = true }

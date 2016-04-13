@@ -13,16 +13,16 @@
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="alternate" href="@Model.Root/rss.xml" title="@Model.SiteTitle" type="application/rss+xml">
-    <link rel="shortcut icon" href="@Model.Root/favicon.png">
+    <link rel="alternate" href="@(Model.Root)rss.xml" title="@Model.SiteTitle" type="application/rss+xml">
+    <link rel="shortcut icon" href="@(Model.Root)favicon.png">
 
-    <link rel="stylesheet" type="text/css" href="@Model.Root/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="@(Model.Root)css/screen.css" />
     <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
 
     <!-- FSharp.Formatting Styles -->
-    <link rel="stylesheet" type="text/css" media="screen" href="@Model.Root/fsharp.formatting/tooltips.css" />
-    <script type="text/javascript" src="@Model.Root/fsharp.formatting/tooltips.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="@(Model.Root)fsharp.formatting/tooltips.css" />
+    <script type="text/javascript" src="@(Model.Root)fsharp.formatting/tooltips.js"></script>
     <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </head>
 
@@ -74,7 +74,7 @@
 
     </div>  
     <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="@Model.Root/js/jquery.fitvids.js"></script>
-    <script type="text/javascript" src="@Model.Root/js/index.js"></script>
+    <script type="text/javascript" src="@(Model.Root)js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="@(Model.Root)js/index.js"></script>
 </body>
 </html>

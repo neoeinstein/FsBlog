@@ -12,6 +12,6 @@
 
 @foreach (var post in Enumerable.Take(Model.Posts, 10))
 {
-    <h3 class="h2link"><a href="@(Model.Root)/blog/@post.Url/index.html">@post.Title</a></h3>
+    <h3 class="h2link"><a href="@(Model.Root)blog/@post.Url/index.html">@post.Title</a></h3>
     <div class="view"><small>@PostDate(post.Date)</small><br />@post.Abstract</div>
 }
